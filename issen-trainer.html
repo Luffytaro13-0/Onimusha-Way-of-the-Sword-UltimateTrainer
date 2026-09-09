@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onimusha · Issen Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0c080e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 1.5rem;
+        }
+
+        .dojo {
+            max-width: 800px;
+            width: 100%;
+            background: linear-gradient(145deg, #16101e 0%, #1e1528 100%);
+            border-radius: 2.5rem;
+            padding: 2.5rem 2.5rem 2.2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(180, 60, 90, 0.15);
+            border: 1px solid rgba(220, 80, 120, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .dojo:hover {
+            box-shadow: 0 25px 70px rgba(160, 40, 70, 0.15), 0 0 0 1px rgba(220, 80, 120, 0.25);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 8px rgba(220, 50, 80, 0.5));
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f2e8fa 0%, #d4b0d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            background: rgba(220, 70, 110, 0.15);
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #d47a9e;
+            border: 1px solid rgba(200, 80, 120, 0.2);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .arena {
+            background: #0a0610;
+            border-radius: 1.8rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(180, 60, 100, 0.12);
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .issen-display {
+            text-align: center;
+            width: 100%;
+        }
+
+        .issen-counter {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: #f0e0f0;
+            letter-spacing: 0.03em;
+            text-shadow: 0 0 30px rgba(200, 60, 100, 0.2);
+            transition: all 0.15s ease;
+            line-height: 1.1;
+        }
+
+        .issen-counter.perfect {
+            color: #8cd4b0;
+            text-shadow: 0 0 40px rgba(80, 220, 150, 0.3);
+            animation: issen-flash 0.3s ease;
+        }
+
+        @keyframes issen-flash {
+            0% { transform: scale(1.4); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .issen-label {
+            font-size: 0.8rem;
+            color: #7a6070;
+            margin-top: 0.4rem;
+            letter-spacing: 0.06em;
+            font-weight: 500;
+        }
+
+        .timing-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 4px;
+            background: #201620;
+            border-radius: 10px;
+            margin: 1.2rem auto 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timing-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #b04070, #d47090, #b04070);
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 550px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-card {
+            background: rgba(10, 6, 16, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 1.2rem 1.2rem 1.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(180, 60, 100, 0.12);
+            transition: all 0.25s ease;
+        }
+
+        .control-card:hover {
+            border-color: rgba(210, 80, 130, 0.3);
+            background: rgba(16, 8, 24, 0.7);
+        }
+
+        .control-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #a07a96;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            background: rgba(30, 18, 40, 0.8);
+            border: 1px solid rgba(160, 70, 100, 0.25);
+            color: #c8b0c0;
+            padding: 0.4rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            letter-spacing: 0.02em;
+            flex: 1;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn.active {
+            background: rgba(200, 60, 100, 0.3);
+            border-color: #c06090;
+            color: #f2dce8;
+            box-shadow: 0 0 20px rgba(200, 60, 100, 0.15);
+        }
+
+        .btn:hover {
+            border-color: #c06090;
+            background: rgba(180, 50, 90, 0.2);
+        }
+
+        .btn-primary {
+            background: rgba(180, 50, 90, 0.2);
+            border-color: #b05080;
+            color: #f0d8e0;
+            flex: 0 1 auto;
+            padding: 0.5rem 1.8rem;
+        }
+
+        .btn-primary:hover {
+            background: rgba(200, 60, 100, 0.35);
+            border-color: #d06090;
+            box-shadow: 0 0 30px rgba(200, 60, 100, 0.15);
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-text {
+            font-size: 0.7rem;
+            color: #5a4060;
+            letter-spacing: 0.03em;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            background: #5a4050;
+            margin-right: 0.4rem;
+        }
+
+        .dot.on {
+            background: #70c090;
+            box-shadow: 0 0 12px rgba(80, 200, 130, 0.4);
+            animation: pulse-dot 1.8s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+
+        .dojo {
+            animation: fadeSlide 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .control-card {
+            animation: cardFade 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .control-card:nth-child(1) { animation-delay: 0.05s; }
+        .control-card:nth-child(2) { animation-delay: 0.12s; }
+
+        @keyframes cardFade {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dojo">
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">⚔️</span>
+                <span class="logo-text">Issen Trainer</span>
+            </div>
+            <span class="badge">⏱️ perfect parry simulator</span>
+        </div>
+
+        <div class="arena">
+            <div class="issen-display">
+                <div class="issen-counter" id="issenCounter">0</div>
+                <div class="issen-label">⚡ perfect issen counters</div>
+                <div class="timing-bar">
+                    <div class="timing-fill" id="timingFill"></div>
+                </div>
+                <div style="margin-top: 0.8rem; font-size: 0.65rem; color: #5a4060;">
+                    <span id="parryStatus">⏳ waiting for attack...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-card">
+                <div class="control-label">🎯 attack timing</div>
+                <div class="btn-group">
+                    <button class="btn" data-speed="slow">slow</button>
+                    <button class="btn active" data-speed="medium">medium</button>
+                    <button class="btn" data-speed="fast">fast</button>
+                </div>
+            </div>
+
+            <div class="control-card">
+                <div class="control-label">🛡️ issen assist</div>
+                <div class="btn-group">
+                    <button class="btn active" data-assist="on">auto-parry</button>
+                    <button class="btn" data-assist="off">manual</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-actions">
+            <div class="status-text">
+                <span class="dot on"></span> trainer ready
+            </div>
+            <div style="display: flex; gap: 0.8rem;">
+                <button class="btn btn-primary" id="resetCounterBtn">⟳ reset</button>
+                <button class="btn" id="simulateAttackBtn">⚔️ simulate attack</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid rgba(120, 60, 80, 0.2); font-size: 0.7rem; color: #5a4060; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <span>⚔️ issen timing · single-player only</span>
+            <span style="letter-spacing: 0.03em;">Onimusha: Way of the Sword · 2026</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const counterElement = document.getElementById('issenCounter');
+            const timingFill = document.getElementById('timingFill');
+            const parryStatus = document.getElementById('parryStatus');
+            const resetBtn = document.getElementById('resetCounterBtn');
+            const simulateBtn = document.getElementById('simulateAttackBtn');
+
+            let counter = 0;
+            let isPerfect = false;
+            let attackSpeed = 1500; // medium default
+
+            // --- settings ---
+            document.querySelectorAll('[data-speed]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-speed]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const speed = this.dataset.speed;
+                    if (speed === 'slow') attackSpeed = 2200;
+                    else if (speed === 'medium') attackSpeed = 1500;
+                    else if (speed === 'fast') attackSpeed = 800;
+                    resetSimulation();
+                });
+            });
+
+            document.querySelectorAll('[data-assist]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-assist]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // --- simulation logic ---
+            let attackInterval = null;
+            let timingInterval = null;
+            let progress = 0;
+            let isSimulating = false;
+
+            function resetSimulation() {
+                if (attackInterval) clearInterval(attackInterval);
+                if (timingInterval) clearInterval(timingInterval);
+                progress = 0;
+                timingFill.style.width = '0%';
+                isSimulating = false;
+                parryStatus.textContent = '⏳ waiting for attack...';
+                document.getElementById('parryStatus').style.color = '#5a4060';
+            }
+
+            function startSimulation() {
+                resetSimulation();
+                isSimulating = true;
+                parryStatus.textContent = '⚔️ attack incoming...';
+                document.getElementById('parryStatus').style.color = '#c87890';
+
+                // progress bar animation
+                let step = 0;
+                timingInterval = setInterval(() => {
+                    step += 1;
+                    progress = Math.min(step / 100, 1);
+                    timingFill.style.width = (progress * 100) + '%';
+
+                    if (progress >= 1) {
+                        clearInterval(timingInterval);
+                        // missed
+                        if (isSimulating) {
+                            parryStatus.textContent = '💢 missed! try again.';
+                            document.getElementById('parryStatus').style.color = '#b06070';
+                            isSimulating = false;
+                            setTimeout(() => {
+                                if (!isSimulating) {
+                                    parryStatus.textContent = '⏳ waiting for attack...';
+                                    document.getElementById('parryStatus').style.color = '#5a4060';
+                                    timingFill.style.width = '0%';
+                                }
+                            }, 1000);
+                        }
+                    }
+                }, attackSpeed / 100);
+
+                // simulate attack window (perfect timing ~70-80%)
+                const perfectWindow = setTimeout(() => {
+                    if (isSimulating) {
+                        // perfect parry!
+                        const isAssistOn = document.querySelector('[data-assist="on"]').classList.contains('active');
+                        if (isAssistOn) {
+                            // auto-parry success
+                            counter++;
+                            counterElement.textContent = counter;
+                            counterElement.classList.remove('perfect');
+                            void counterElement.offsetWidth;
+                            counterElement.classList.add('perfect');
+                            parryStatus.textContent = '✨ PERFECT ISSEN! (auto-parry)';
+                            document.getElementById('parryStatus').style.color = '#8cd4b0';
+                            isSimulating = false;
+                            clearInterval(timingInterval);
+                            timingFill.style.width = '80%';
+                            setTimeout(() => {
+                                if (!isSimulating) {
+                                    parryStatus.textContent = '⏳ waiting for attack...';
+                                    document.getElementById('parryStatus').style.color = '#5a4060';
+                                    timingFill.style.width = '0%';
+                                }
+                            }, 1200);
+                        } else {
+                            // manual: wait for user to click
+                            parryStatus.textContent = '🛡️ PRESS "simulate attack" NOW!';
+                            document.getElementById('parryStatus').style.color = '#e0b070';
+                            // give 300ms window for manual click
+                            const manualWindow = setTimeout(() => {
+                                if (isSimulating) {
+                                    // missed
+                                    parryStatus.textContent = '💢 too slow! try again.';
+                                    document.getElementById('parryStatus').style.color = '#b06070';
+                                    isSimulating = false;
+                                    clearInterval(timingInterval);
+                                    timingFill.style.width = '0%';
+                                    setTimeout(() => {
+                                        if (!isSimulating) {
+                                            parryStatus.textContent = '⏳ waiting for attack...';
+                                            document.getElementById('parryStatus').style.color = '#5a4060';
+                                        }
+                                    }, 1000);
+                                }
+                            }, 400);
+                            // store timeout to clear if user clicks
+                            window._manualTimeout = manualWindow;
+                        }
+                    }
+                }, attackSpeed * 0.75);
+
+                // store timeout to clear on reset
+                window._perfectWindow = perfectWindow;
+            }
+
+            // --- simulate attack (manual) ---
+            function handleManualParry() {
+                if (!isSimulating) {
+                    // start new simulation
+                    startSimulation();
+                    return;
+                }
+
+                // if we are in manual mode and the "PRESS NOW" is shown
+                const isManual = !document.querySelector('[data-assist="on"]').classList.contains('active');
+                if (isManual && parryStatus.textContent.includes('PRESS "simulate attack" NOW')) {
+                    // perfect!
+                    counter++;
+                    counterElement.textContent = counter;
+                    counterElement.classList.remove('perfect');
+                    void counterElement.offsetWidth;
+                    counterElement.classList.add('perfect');
+                    parryStatus.textContent = '✨ PERFECT ISSEN! (manual)';
+                    document.getElementById('parryStatus').style.color = '#8cd4b0';
+                    isSimulating = false;
+                    clearInterval(timingInterval);
+                    if (window._manualTimeout) clearTimeout(window._manualTimeout);
+                    if (window._perfectWindow) clearTimeout(window._perfectWindow);
+                    timingFill.style.width = '80%';
+                    setTimeout(() => {
+                        if (!isSimulating) {
+                            parryStatus.textContent = '⏳ waiting for attack...';
+                            document.getElementById('parryStatus').style.color = '#5a4060';
+                            timingFill.style.width = '0%';
+                        }
+                    }, 1200);
+                } else {
+                    // if no active attack, start one
+                    if (!isSimulating) startSimulation();
+                }
+            }
+
+            // --- reset ---
+            resetBtn.addEventListener('click', function() {
+                counter = 0;
+                counterElement.textContent = '0';
+                counterElement.classList.remove('perfect');
+                resetSimulation();
+                parryStatus.textContent = '⏳ waiting for attack...';
+                document.getElementById('parryStatus').style.color = '#5a4060';
+                timingFill.style.width = '0%';
+            });
+
+            // --- simulate attack button ---
+            simulateBtn.addEventListener('click', function() {
+                // if auto-assist is on, just start a new sim
+                const isAssistOn = document.querySelector('[data-assist="on"]').classList.contains('active');
+                if (isAssistOn) {
+                    if (isSimulating) {
+                        // if already simulating, reset and start new
+                        resetSimulation();
+                    }
+                    startSimulation();
+                } else {
+                    // manual mode
+                    handleManualParry();
+                }
+            });
+
+            // initial state
+            parryStatus.textContent = '⏳ press "simulate attack" to start';
+            document.getElementById('parryStatus').style.color = '#5a4060';
+
+            // start with a demo attack after 1s
+            setTimeout(() => {
+                if (!isSimulating) {
+                    startSimulation();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
