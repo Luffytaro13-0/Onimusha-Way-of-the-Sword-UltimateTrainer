@@ -203,6 +203,10 @@ Delete the tool folder. No registry changes are made.
 - 🐞 **Report** issues
 - 💬 **Share** with friends!
 
+## ⚔️ Issen Trainer — Practice Your Parry
 
+Sharpen your skills with our interactive Issen Trainer! Master the perfect parry timing in a simulated environment before facing the Genma hordes.
+
+[**Launch Issen Trainer**](issen-trainer.html)
 
 © 2026 • Onimusha: Way of the Sword • Awaken the Blade
